@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: hoteleria
+
+  datasource:
+    url: jdbc:mariadb://localhost:3306/hotel_db
+    username: TU_USUARIO
+    password: TU_CONTRASEÑA
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true

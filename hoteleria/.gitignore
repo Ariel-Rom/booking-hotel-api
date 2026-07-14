@@ -1,0 +1,23 @@
+HELP.md
+target/
+build/
+
+.mvn/
+mvnw
+mvnw.cmd
+
+### IDEs ###
+.idea
+*.iml
+.vscode/
+.classpath
+.project
+.settings
+
+### logs ###
+*.log
+
+### OS ###
+.DS_Store
+
+.src/main/resources/application.yml
