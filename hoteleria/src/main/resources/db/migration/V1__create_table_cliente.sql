@@ -3,6 +3,8 @@ create table cliente(
     nombre varchar(20) not null,
     apellido varchar(30) unique not null,
     dni varchar(20) not null unique,
-    created_at date not null,
+    activo boolean,
+    created_at DATETIME,
+    updated_at DATETIME,
     primary key(id)
 );
