@@ -5,10 +5,11 @@ import com.spring_boot_ariel_projects.hoteleria.model.reserva.DetallesDeReserva;
 import com.spring_boot_ariel_projects.hoteleria.model.reserva.RegistroReserva;
 import com.spring_boot_ariel_projects.hoteleria.model.reserva.Reserva;
 import com.spring_boot_ariel_projects.hoteleria.repository.ReservaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,29 +18,39 @@ public class ReservaService implements IReservaService{
     private final ReservaRepository reservaRepository;
 
     @Override
-    public DetallesDeReserva obtener(Long idReserva) {
-        Reserva reserva = reservaRepository.findById(idReserva).orElseThrow
-                (() -> new IllegalArgumentException("Reserva no encontrada"));
+    public DetallesDeReserva obtener(Long reservaId) {
+        var reserva = getReservaOrThrow(reservaId);
         return new DetallesDeReserva(reserva);
     }
 
     @Override
-    public List<DetallesDeReserva> obtenerListaReserva() {
-        return List.of();
+    public Page<DetallesDeReserva> obtenerListaReserva(Pageable pageable) {
+        return reservaRepository.findReservaByActivoTrue(pageable)
+                .map(DetallesDeReserva::new);
     }
 
     @Override
     public DetallesDeReserva registrar(RegistroReserva registroReserva) {
-        return null;
+        var nuevaReserva = new Reserva(registroReserva);
+        reservaRepository.save(nuevaReserva);
+        return new DetallesDeReserva(nuevaReserva);
     }
 
     @Override
-    public DetallesDeReserva actualizar(ActualizarReserva actualizarReserva) {
-        return null;
+    public DetallesDeReserva actualizar(ActualizarReserva actualizarReserva, Long reservaId) {
+        var reserva = getReservaOrThrow(reservaId);
+        reserva.actualizarDatos(actualizarReserva);
+        return new DetallesDeReserva(reserva);
     }
 
     @Override
-    public void eliminar(Long idReserva) {
+    public void eliminar(Long reservaId) {
+        var reserva = getReservaOrThrow(reservaId);
+        reserva.desactivar();
+    }
 
+    private Reserva getReservaOrThrow(Long reservaId){
+        return reservaRepository.findReservaByActivoTrue(reservaId).orElseThrow(
+                () -> new EntityNotFoundException("Reserva no encontrada!"));
     }
 }
