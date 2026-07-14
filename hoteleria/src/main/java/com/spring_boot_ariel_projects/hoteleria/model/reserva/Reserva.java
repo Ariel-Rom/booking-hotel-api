@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,16 +24,13 @@ public class Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
     private Long hotelId;
-    @NotBlank
-    private String nombreCliente;
     @FutureOrPresent
     @NotNull
-    private LocalDateTime diaIngreso;
+    private LocalDate diaIngreso;
     @FutureOrPresent
     @NotNull
-    private LocalDateTime diaEgreso;
+    private LocalDate diaEgreso;
     @Min(1)
     @NotNull
     private Long cantidadHuespedes;
@@ -41,10 +40,11 @@ public class Reserva {
     private Long userId;
 
     public Reserva(RegistroReserva registroReserva){
-        this.nombreCliente = registroReserva.nombreCliente();
         this.diaIngreso = registroReserva.diaIngreso();
         this.diaEgreso = registroReserva.diaEgreso();
         this.cantidadHuespedes = registroReserva.cantidadHuespedes();
+        this.userId = registroReserva.userId();
+        this.hotelId = registroReserva.hotelId();
         this.activo = true;
     }
 
@@ -67,12 +67,8 @@ public class Reserva {
             this.hotelId = actualizarReserva.hotelId();
         }
 
-        if (actualizarReserva.nombreCliente() != null && !actualizarReserva.nombreCliente().isBlank()){
-            this.nombreCliente = actualizarReserva.nombreCliente();
-        }
-
-        LocalDateTime ingreso = actualizarReserva.diaIngreso() != null ? actualizarReserva.diaIngreso() : this.diaIngreso;
-        LocalDateTime egreso = actualizarReserva.diaEgreso() != null? actualizarReserva.diaEgreso() : this.diaEgreso;
+        LocalDate ingreso = actualizarReserva.diaIngreso() != null ? actualizarReserva.diaIngreso() : this.diaIngreso;
+        LocalDate egreso = actualizarReserva.diaEgreso() != null? actualizarReserva.diaEgreso() : this.diaEgreso;
 
         if (egreso.isBefore(ingreso)){
             throw new IllegalArgumentException("La fecha de egreso no puede ser anterior a la fecha de ingreso");
@@ -87,10 +83,6 @@ public class Reserva {
             }
             this.cantidadHuespedes = actualizarReserva.cantidadHuespedes();
         }
-    }
-
-    public void activar(){
-        this.activo = true;
     }
 
     public void desactivar(){
